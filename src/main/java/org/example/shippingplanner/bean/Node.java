@@ -13,6 +13,7 @@ public class Node {
     // Nom du point (ville, port, gare…)
     @Column(nullable = false, unique = true)
     private String name;
+    private String code ;
 
     // Coordonnées géographiques
     @Column(nullable = false)

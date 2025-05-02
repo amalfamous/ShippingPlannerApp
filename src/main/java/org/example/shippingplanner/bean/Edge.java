@@ -9,6 +9,7 @@ public class Edge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String code ;
 
     // Nœud de départ
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

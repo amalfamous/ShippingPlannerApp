@@ -10,6 +10,7 @@ public class Perturbation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String code ;
 
     // Segment impacté par la perturbation
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
