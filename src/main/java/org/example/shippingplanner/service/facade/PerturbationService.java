@@ -4,7 +4,7 @@ import org.example.shippingplanner.bean.Perturbation;
 
 import java.util.List;
 
-public interface PerturbationEdge {
+public interface PerturbationService {
     List<Perturbation> findByCode(String code);
     int deleteByCode(String code);
     // Trouver les perturbations d'une liaison spécifique
