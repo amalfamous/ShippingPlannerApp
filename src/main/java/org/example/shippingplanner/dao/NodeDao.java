@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface NodeDao extends JpaRepository<Node, Long> {
-    List<Node> findByCode(String code);
+    Node findByCode(String code);
     int deleteByCode(String code);
     List<Node> findByNodeType(String type);
 }

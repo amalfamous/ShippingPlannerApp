@@ -6,9 +6,11 @@ import lombok.Data;
 import java.util.List;
 @Data
 public class RouteResponseDto {
-    private List<String> steps; // codes des noeuds à traverser
+    private Long id;
+    private String code;
+    private List<String> steps;
     private double totalCost;
     private double totalTime;
-    private String rationale; // pourquoi ce chemin ? (e.g. "Shortest Time")
+    private String rationale;
 }
 

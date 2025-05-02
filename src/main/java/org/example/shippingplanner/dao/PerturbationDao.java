@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface PerturbationDao extends JpaRepository<Perturbation, Long> {
-    List<Perturbation> findByCode(String code);
+    Perturbation findByCode(String code);
     int deleteByCode(String code);
     // Trouver les perturbations d'une liaison spécifique
     List<Perturbation> findByEdgeCode(String code);

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EdgeDao extends JpaRepository<Edge, Long> {
-    List<Edge> findByCode(String code);
+    Edge findByCode(String code);
     int deleteByCode(String code);
     // Pour récupérer toutes les liaisons sortantes depuis un noeud donné
     List<Edge> findBySourceCode(String code);

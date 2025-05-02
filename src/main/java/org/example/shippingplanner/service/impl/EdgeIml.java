@@ -4,10 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.example.shippingplanner.bean.Edge;
 import org.example.shippingplanner.bean.Node;
-import org.example.shippingplanner.bean.Perturbation;
 import org.example.shippingplanner.dao.EdgeDao;
 import org.example.shippingplanner.dao.NodeDao;
-import org.example.shippingplanner.dao.PerturbationDao;
 import org.example.shippingplanner.service.facade.EdgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,28 +22,21 @@ public class EdgeIml implements EdgeService {
 
     @Override
     public int save(Edge edge) {
-        // Générer un code si absent
         if (edge.getCode() == null || edge.getCode().isEmpty()) {
             edge.setCode(UUID.randomUUID().toString());
         }
-        // Vérifier unicité du code
-        if (!dao.findByCode(edge.getCode()).isEmpty()) {
-            return -1; // Code déjà existant
+        if (dao.findByCode(edge.getCode()) != null) {
+            return -1;
         }
-
-        // Charger la source et la cible depuis la BDD
         if (edge.getSource() != null && edge.getSource().getId() != null) {
-            Node source = nodeDao.findById(edge.getSource().getId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Node non trouvé pour l'id: " + edge.getSource().getId()));
-            edge.setSource(source);
+            Node src = nodeDao.findById(edge.getSource().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getSource().getId()));
+            edge.setSource(src);
         }
-
         if (edge.getTarget() != null && edge.getTarget().getId() != null) {
-            Node target = nodeDao.findById(edge.getTarget().getId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Node non trouvé pour l'id: " + edge.getTarget().getId()));
-            edge.setTarget(target);
+            Node tgt = nodeDao.findById(edge.getTarget().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getTarget().getId()));
+            edge.setTarget(tgt);
         }
         dao.save(edge);
         return 1;
@@ -54,37 +45,23 @@ public class EdgeIml implements EdgeService {
     @Override
     @Transactional
     public Edge update(String code, Edge edge) {
-        // Récupérer l'entité existante
-        List<Edge> list = dao.findByCode(code);
-        if (list.isEmpty()) {
-            throw new EntityNotFoundException("Edge non trouvé avec le code " + code);
+        Edge existing = dao.findByCode(code);
+        if (existing == null) {
+            throw new EntityNotFoundException("Edge not found with code: " + code);
         }
-        Edge existing = list.get(0);
-
-        // Mettre à jour les champs s'ils sont fournis
-        if (edge.getDistanceKm() > 0) {
-            existing.setDistanceKm(edge.getDistanceKm());
-        }
-        if (edge.getDurationHours() > 0) {
-            existing.setDurationHours(edge.getDurationHours());
-        }
-        if (edge.getCost() > 0) {
-            existing.setCost(edge.getCost());
-        }
-        if (edge.getTransportMode() != null) {
-            existing.setTransportMode(edge.getTransportMode());
-        }
+        if (edge.getDistanceKm() > 0) existing.setDistanceKm(edge.getDistanceKm());
+        if (edge.getDurationHours() > 0) existing.setDurationHours(edge.getDurationHours());
+        if (edge.getCost() > 0) existing.setCost(edge.getCost());
+        if (edge.getTransportMode() != null) existing.setTransportMode(edge.getTransportMode());
         if (edge.getSource() != null && edge.getSource().getId() != null) {
-            Node source = nodeDao.findById(edge.getSource().getId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Node non trouvé pour l'id: " + edge.getSource().getId()));
-            existing.setSource(source);
+            Node src = nodeDao.findById(edge.getSource().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getSource().getId()));
+            existing.setSource(src);
         }
         if (edge.getTarget() != null && edge.getTarget().getId() != null) {
-            Node target = nodeDao.findById(edge.getTarget().getId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Node non trouvé pour l'id: " + edge.getTarget().getId()));
-            existing.setTarget(target);
+            Node tgt = nodeDao.findById(edge.getTarget().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getTarget().getId()));
+            existing.setTarget(tgt);
         }
         return dao.save(existing);
     }
@@ -95,7 +72,7 @@ public class EdgeIml implements EdgeService {
     }
 
     @Override
-    public List<Edge> findByCode(String code) {
+    public Edge findByCode(String code) {
         return dao.findByCode(code);
     }
 

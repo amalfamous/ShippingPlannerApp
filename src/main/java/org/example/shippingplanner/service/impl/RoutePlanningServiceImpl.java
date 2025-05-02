@@ -3,12 +3,12 @@ package org.example.shippingplanner.service.impl;
 import org.example.shippingplanner.bean.Edge;
 import org.example.shippingplanner.bean.Node;
 import org.example.shippingplanner.bean.Perturbation;
+import org.example.shippingplanner.bean.RouteRequest;
+import org.example.shippingplanner.bean.RouteResponse;
 import org.example.shippingplanner.dao.EdgeDao;
 import org.example.shippingplanner.dao.NodeDao;
 import org.example.shippingplanner.dao.PerturbationDao;
 import org.example.shippingplanner.service.facade.RoutePlanningService;
-import org.example.shippingplanner.ws.dto.RouteRequestDto;
-import org.example.shippingplanner.ws.dto.RouteResponseDto;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -30,7 +30,7 @@ public class RoutePlanningServiceImpl implements RoutePlanningService {
     private PerturbationDao perturbationDao;
 
     @Override
-    public RouteResponseDto planRoute(RouteRequestDto request) {
+    public RouteResponse planRoute(RouteRequest request) {
         // 1. Charger les données
         List<Node> nodes = nodeDao.findAll();
         List<Edge> edges = edgeDao.findAll();
@@ -46,7 +46,6 @@ public class RoutePlanningServiceImpl implements RoutePlanningService {
 
         for (Edge edge : edges) {
             if (request.getTransportModes().contains(edge.getTransportMode())) {
-                // Appliquer les perturbations si existantes
                 double cost = edge.getCost();
                 double duration = edge.getDurationHours();
 
@@ -58,11 +57,10 @@ public class RoutePlanningServiceImpl implements RoutePlanningService {
                 }
 
                 graph.addEdge(edge.getSource(), edge.getTarget(), edge);
-                // Pondération selon la priorité choisie
                 switch (request.getPriority()) {
-                    case "COST" -> graph.setEdgeWeight(edge, cost);
                     case "TIME" -> graph.setEdgeWeight(edge, duration);
-                    default -> graph.setEdgeWeight(edge, cost); // par défaut coût
+                    case "EMISSIONS" -> graph.setEdgeWeight(edge, edge.getCo2EmissionKg() != null ? edge.getCo2EmissionKg() : cost);
+                    default -> graph.setEdgeWeight(edge, cost);
                 }
             }
         }
@@ -70,25 +68,22 @@ public class RoutePlanningServiceImpl implements RoutePlanningService {
         // 3. Trouver le chemin optimal
         Node origin = codeToNode.get(request.getOriginCode());
         Node destination = codeToNode.get(request.getDestinationCode());
-
         if (origin == null || destination == null) {
             throw new IllegalArgumentException("Origine ou destination introuvable");
         }
 
         var dijkstra = new DijkstraShortestPath<>(graph);
         var path = dijkstra.getPath(origin, destination);
-
         if (path == null) {
             throw new RuntimeException("Aucun chemin trouvé.");
         }
 
         // 4. Construire la réponse
-        RouteResponseDto response = new RouteResponseDto();
+        RouteResponse response = new RouteResponse();
         List<String> steps = new ArrayList<>();
         for (Node node : path.getVertexList()) {
             steps.add(node.getCode());
         }
-
         response.setSteps(steps);
         response.setTotalCost(path.getEdgeList().stream().mapToDouble(Edge::getCost).sum());
         response.setTotalTime(path.getEdgeList().stream().mapToDouble(Edge::getDurationHours).sum());
@@ -96,4 +91,6 @@ public class RoutePlanningServiceImpl implements RoutePlanningService {
 
         return response;
     }
+
+
 }

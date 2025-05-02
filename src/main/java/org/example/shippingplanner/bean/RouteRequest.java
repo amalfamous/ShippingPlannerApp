@@ -1,12 +1,29 @@
 package org.example.shippingplanner.bean;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+@Entity
 @Data
 public class RouteRequest {
-    private List<String> steps; // codes des noeuds à traverser
-    private double totalCost;
-    private double totalTime;
-    private String rationale; // pourquoi ce chemin ? (e.g. "Shortest Time")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
+    private String originCode;
+
+    @Column(nullable = false)
+    private String destinationCode;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "request_transport_modes",
+            joinColumns = @JoinColumn(name = "request_id")
+    )
+    @Column(name = "mode")
+    private List<String> transportModes;
+
+    @Column(nullable = false)
+    private String priority;     // "COST", "TIME" ou "EMISSIONS"
 }
