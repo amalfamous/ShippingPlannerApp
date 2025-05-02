@@ -15,4 +15,5 @@ public interface EdgeDao extends JpaRepository<Edge, Long> {
 
     // Pour récupérer toutes les liaisons entrantes vers un noeud donné
     List<Edge> findByTargetCode(String code);
+
 }
