@@ -16,7 +16,6 @@ public class ExternalMapServiceProvided {
 
     /**
      * Estime la distance routière (en km) entre deux points.
-     * Exemple d'appel: GET /api/v1/maps/distance?lat1=48.8566&lon1=2.3522&lat2=51.5074&lon2=-0.1278
      */
     @GetMapping("distance")
     public ResponseEntity<Double> estimateDistance(

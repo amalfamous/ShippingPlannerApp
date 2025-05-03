@@ -6,10 +6,16 @@ Récupère la distance routière réelle entre deux points (lat/lon).
 */
 
 import org.example.shippingplanner.service.facade.ExternalMapService;
+import org.example.shippingplanner.ws.dto.MatrixResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExternalMapServiceImpl implements ExternalMapService {
@@ -25,23 +31,36 @@ public class ExternalMapServiceImpl implements ExternalMapService {
 
     @Override
     public double estimateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
-        // URL de l'API OpenRouteService pour obtenir les distances
         String url = "https://api.openrouteservice.org/v2/matrix/driving-car";
 
-        // Construire les coordonnées pour l'API (format : longitude, latitude)
-        String coordinates = String.format("[[%f,%f],[%f,%f]]", lon1, lat1, lon2, lat2);
+        // 1) Construire le corps JSON de la requête
+        Map<String, Object> body = Map.of(
+                "locations", List.of(
+                        List.of(lon1, lat1),
+                        List.of(lon2, lat2)
+                ),
+                "metrics", List.of("distance")
+        );
 
-        // Construire l'URI
-        String finalUrl = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("api_key", apiKey)
-                .queryParam("locations", coordinates)
-                .toUriString();
+        // 2) Préparer les headers Spring
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        // ORS attend la clé dans "Authorization"
+        headers.set("Authorization", apiKey);
 
-        // Faire la requête
-        String response = restTemplate.getForObject(finalUrl, String.class);
+        HttpEntity<Map<String,Object>> request = new HttpEntity<>(body, headers);
 
-        // Extraire la distance du JSON de réponse (supposons que la distance est en km)
-        return extractDistanceFromResponse(response);
+        // 3) Appel POST + binding automatique en MatrixResponse
+        MatrixResponse resp = restTemplate
+                .postForObject(url, request, MatrixResponse.class);
+
+        if (resp == null || resp.getDistances() == null) {
+            throw new RuntimeException("Impossible de récupérer la matrice distances");
+        }
+
+        // 4) distances en mètres → km
+        double meters = resp.getDistances()[0][1];
+        return meters / 1000.0;
     }
 
     // Méthode pour extraire la distance en km de la réponse JSON de l'API
