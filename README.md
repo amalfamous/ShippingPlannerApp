@@ -34,7 +34,7 @@ This is the backend system for the **Shipping Planner** application. It provides
 
 - Java 20
 - Maven
-- MySQL or use H2 in-memory database
+- postgresql database
 
 ### Setup
 
