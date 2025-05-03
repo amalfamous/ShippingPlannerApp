@@ -13,7 +13,7 @@ public class Perturbation {
     private String code ;
 
     // Segment impacté par la perturbation
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "edge_id")
     private Edge edge;
 

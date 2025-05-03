@@ -22,25 +22,29 @@ public class EdgeIml implements EdgeService {
 
     @Override
     public int save(Edge edge) {
-        if (edge.getCode() == null || edge.getCode().isEmpty()) {
-            edge.setCode(UUID.randomUUID().toString());
+        if (edge.getCode() != null && findByCode(edge.getCode()) != null) {
+            return -1; // duplicate code
         }
-        if (dao.findByCode(edge.getCode()) != null) {
-            return -1;
+
+        if (edge.getSource() == null || edge.getSource().getId() == null) {
+            throw new IllegalArgumentException("Source node must not be null and must have an ID");
         }
-        if (edge.getSource() != null && edge.getSource().getId() != null) {
-            Node src = nodeDao.findById(edge.getSource().getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getSource().getId()));
-            edge.setSource(src);
+        if (edge.getTarget() == null || edge.getTarget().getId() == null) {
+            throw new IllegalArgumentException("Target node must not be null and must have an ID");
         }
-        if (edge.getTarget() != null && edge.getTarget().getId() != null) {
-            Node tgt = nodeDao.findById(edge.getTarget().getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Node not found: " + edge.getTarget().getId()));
-            edge.setTarget(tgt);
-        }
+
+        Node src = nodeDao.findById(edge.getSource().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Source node not found: " + edge.getSource().getId()));
+        Node tgt = nodeDao.findById(edge.getTarget().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Target node not found: " + edge.getTarget().getId()));
+
+        edge.setSource(src);
+        edge.setTarget(tgt);
+
         dao.save(edge);
         return 1;
     }
+
 
     @Override
     @Transactional
@@ -77,6 +81,7 @@ public class EdgeIml implements EdgeService {
     }
 
     @Override
+    @Transactional
     public int deleteByCode(String code) {
         return dao.deleteByCode(code);
     }

@@ -12,12 +12,12 @@ public class Edge {
     private String code ;
 
     // Nœud de départ
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "source_node_id")
     private Node source;
 
     // Nœud d’arrivée
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "target_node_id")
     private Node target;
 
