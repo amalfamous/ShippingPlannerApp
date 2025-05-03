@@ -32,7 +32,7 @@ This is the backend system for the **Shipping Planner** application. It provides
 
 ### Prerequisites
 
-- Java 17 or later
+- Java 20
 - Maven
 - MySQL or use H2 in-memory database
 
@@ -47,20 +47,6 @@ cd shipping-planner-backend
 
 Edit `src/main/resources/application.properties`:
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/shipping_db
-spring.datasource.username=root
-spring.datasource.password=yourpassword
-spring.jpa.hibernate.ddl-auto=update
-```
-
-To use H2:
-
-```properties
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.h2.console.enabled=true
-```
 
 ### Run the App
 
