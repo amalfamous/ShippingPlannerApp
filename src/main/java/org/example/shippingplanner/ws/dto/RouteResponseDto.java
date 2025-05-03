@@ -12,5 +12,7 @@ public class RouteResponseDto {
     private double totalCost;
     private double totalTime;
     private String rationale;
+    // pour tracer la route sur la carte
+    private List<CoordinateDto> coordinates;
 }
 

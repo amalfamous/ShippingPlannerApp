@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/maps/")
 @CrossOrigin("*")
-public class ExternalMapServiceProvided {
+public class ExternalMapProvided {
 
     @Autowired
     private ExternalMapService externalMapService;

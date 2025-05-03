@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/routes/")
 @CrossOrigin("*")
-public class RoutePlanningServiceProvided {
+public class RoutePlanningProvided {
     @Autowired private RoutePlanningService service;
     @Autowired private RoutePlanningConverter converter;
     /**

@@ -2,8 +2,11 @@ package org.example.shippingplanner.ws.dto;
 
 import lombok.Data;
 import org.example.shippingplanner.bean.Node;
+
+import java.io.Serializable;
+
 @Data
-public class EdgeDto {
+public class EdgeDto implements Serializable {
     private Long id;
     private String code ;
     // Nœud de départ

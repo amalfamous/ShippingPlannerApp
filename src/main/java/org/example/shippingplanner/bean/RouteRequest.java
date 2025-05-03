@@ -12,7 +12,8 @@ public class RouteRequest {
     private Long id;
     @Column(nullable = false)
     private String originCode;
-
+    @Column(unique = true, nullable = false)
+    private String code;
     @Column(nullable = false)
     private String destinationCode;
 
