@@ -2,6 +2,8 @@ package org.example.shippingplanner.service.facade;
 
 import org.example.shippingplanner.bean.RouteRequest;
 import org.example.shippingplanner.bean.RouteResponse;
+import org.example.shippingplanner.ws.dto.RouteScenarioRequestDto;
+import org.example.shippingplanner.ws.dto.RouteScenarioResponseDto;
 
 public interface RoutePlanningService {
     //Planifier un itinéraire optimal en fonction de critères complexes (coût, temps, perturbations, etc.)

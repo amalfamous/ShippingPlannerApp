@@ -7,6 +7,8 @@ import org.example.shippingplanner.service.facade.RoutePlanningService;
 import org.example.shippingplanner.ws.converter.RoutePlanningConverter;
 import org.example.shippingplanner.ws.dto.RouteRequestDto;
 import org.example.shippingplanner.ws.dto.RouteResponseDto;
+import org.example.shippingplanner.ws.dto.RouteScenarioRequestDto;
+import org.example.shippingplanner.ws.dto.RouteScenarioResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,16 @@ public class RoutePlanningProvided {
     @GetMapping("health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("RoutePlanning API is up and running");
+    }
+    /**
+     * Planifie un itinéraire avec scénario “what-if” (perturbations additionnelles).
+     */
+    @PostMapping("scenario")
+    public ResponseEntity<RouteScenarioResponseDto> planRouteScenario(
+            @Valid @RequestBody RouteScenarioRequestDto dto
+    ) {
+        RouteScenarioResponseDto resp = service.planRouteWithScenario(dto);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
 
